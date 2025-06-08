@@ -1,0 +1,99 @@
+{
+    "workflows": {
+        "binance": {
+            "enabled": true,
+            "use_redis": true,
+            "redis_queue": "binance_data",
+            "config": {
+                "symbols": [
+                    "btcusdt",
+                    "ethusdt"
+                ],
+                "streams": [
+                    "aggTrade",
+                    "markPrice"
+                ],
+                "rate_limit": 10,
+                "rate_limit_window": 1.0
+            }
+        },
+        "weather": {
+            "enabled": true,
+            "use_redis": true,
+            "redis_queue": "weather_data",
+            "config": {
+                "latitude": 40.7128,
+                "longitude": -74.0060,
+                "forecast_days": 3
+            }
+        },
+        "news": {
+            "enabled": true,
+            "use_redis": true,
+            "redis_queue": "news_data",
+            "config": {
+                "feeds": [
+                    "https://feeds.content.dowjones.io/public/rss/mw_topstories"
+                ],
+                "keywords": [
+                    "S&P 500",
+                    "Dow Jones",
+                    "Nasdaq",
+                    "IPO",
+                    "cryptocurrency",
+                    "interest rate",
+                    "Federal Reserve",
+                    "inflation",
+                    "economy"
+                ],
+                "update_interval": 1800
+            }
+        }
+    },
+    "redis": {
+        "enabled": true,
+        "persistence": true,
+        "max_memory": "512mb",
+        "max_memory_policy": "allkeys-lru",
+        "max_queue_length": 20
+    },
+    "api": {
+        "host": "0.0.0.0",
+        "port": 8000,
+        "workers": 4,
+        "log_level": "info",
+        "cors_origins": [
+            "*"
+        ]
+    },
+    "logging": {
+        "level": "info",
+        "format": "json",
+        "output": "stdout",
+        "retention": 7
+    },
+    "monitoring": {
+        "enabled": true,
+        "metrics": [
+            "queue_size",
+            "processing_time",
+            "error_rate"
+        ],
+        "alerts": {
+            "queue_size_threshold": 1000,
+            "error_rate_threshold": 5
+        }
+    },
+    "deployment": {
+        "strategy": "rolling",
+        "health_check": {
+            "interval": 30,
+            "timeout": 5,
+            "retries": 3
+        },
+        "rollback": {
+            "enabled": true,
+            "max_attempts": 3
+        }
+    }
+}
