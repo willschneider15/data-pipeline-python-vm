@@ -1,4 +1,4 @@
-# Cursor Rules for Insight Backend
+# Cursor Rules for Data Pipeline Backend
 
 # Common Patterns
 - **Data Fetching**: Use aiohttp for HTTP requests

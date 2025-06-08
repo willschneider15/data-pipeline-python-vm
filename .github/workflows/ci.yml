@@ -50,7 +50,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd ~/opt/insight-current-backend
+          cd ~/opt/data-pipeline-python-vm
           git pull
           docker-compose down
           docker-compose up -d --build
