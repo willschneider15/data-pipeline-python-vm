@@ -32,8 +32,8 @@ cd /opt  # or your preferred directory
 
 2. Clone the repository onto the VM:
 ```bash
-git clone https://github.com/your-username/data-processing-workflow.git
-cd data-processing-workflow
+git clone https://github.com/willschneider15/data-pipeline-python-vm.git
+cd data-pipeline-python-vm
 ```
 Note: You will need to get perms on the VM to do this
 
