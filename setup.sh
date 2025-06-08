@@ -71,8 +71,8 @@ setup_env() {
     print_message "Setting up environment variables..."
     
     # Redis Configuration
-    read -p "Enter Redis URL (default: redis://redis:6379/0): " redis_url
-    redis_url=${redis_url:-"redis://redis:6379/0"}
+    read -p "Enter Redis Port (default: 6380): " redis_port
+    redis_port=${redis_port:-"6380"}
     
     # API Configuration
     read -p "Enter API Host (default: 0.0.0.0): " api_host
@@ -88,7 +88,7 @@ setup_env() {
     # Create .env file
     cat > "$env_file" << EOF
 # Redis Configuration
-REDIS_URL=$redis_url
+REDIS_PORT=$redis_port
 
 # API Configuration
 API_HOST=$api_host
@@ -121,13 +121,35 @@ init_redis_queues() {
         sleep 5  # Wait for Redis to start
     fi
     
+    # Check Redis connection
+    if ! docker-compose exec -T redis redis-cli ping | grep -q "PONG"; then
+        print_error "Redis is not responding. Please check Redis logs."
+        docker-compose logs redis
+        exit 1
+    fi
+    
+    print_message "Redis is responding. Initializing queues..."
+    
     # Initialize each queue
     for queue in $queues; do
         if [ ! -z "$queue" ]; then
             print_message "Initializing queue: $queue"
-            docker-compose exec -T redis redis-cli DEL "workflow:$queue:queue"
+            # Create the queue key
+            queue_key="workflow:$queue:queue"
+            # Clear any existing data
+            docker-compose exec -T redis redis-cli DEL "$queue_key"
+            # Verify queue was created
+            if docker-compose exec -T redis redis-cli EXISTS "$queue_key" | grep -q "0"; then
+                print_message "Queue $queue initialized successfully"
+            else
+                print_error "Failed to initialize queue $queue"
+            fi
         fi
     done
+    
+    # List all queues to verify
+    print_message "Verifying all queues:"
+    docker-compose exec -T redis redis-cli KEYS "workflow:*"
     
     print_message "Redis queues initialized successfully."
 }
